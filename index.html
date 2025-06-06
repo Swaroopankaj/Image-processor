@@ -25,7 +25,11 @@
             display: block;
             margin: auto;
             border-radius: 0.75rem; /* rounded-lg */
-            /* Add a checkerboard background for transparent areas */
+            /* Removed the checkerboard background from static CSS */
+        }
+
+        /* New CSS class for the checkerboard background */
+        .checkerboard-bg {
             background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
                               linear-gradient(-45deg, #ccc 25%, transparent 25%),
                               linear-gradient(45deg, transparent 75%, #ccc 75%),
@@ -33,6 +37,7 @@
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
+
         /* Custom scrollbar for control panels */
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
@@ -70,7 +75,7 @@
 
         <!-- Right Panel: Controls and Settings -->
         <div class="w-full md:w-1/4 h-1/3 md:h-full bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-lg p-4 flex flex-col space-y-4 custom-scrollbar">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Image Controls</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Image Processor</h2>
 
             <!-- Upload Image -->
             <div>
@@ -600,6 +605,8 @@
         function drawImage() {
             if (!currentImage.src) {
                 ctx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+                // Also update background if no image is loaded
+                updateCanvasBackground(); 
                 return;
             }
 
@@ -791,6 +798,7 @@
                 // If no segmentation effects (either type), just draw the base filtered image
                 ctx.drawImage(baseFilteredImageCanvas, 0, 0, width, height);
             }
+            updateCanvasBackground(); // Update checkerboard after drawing
         }
 
         // Helper function to convert hex color to RGB
@@ -947,7 +955,7 @@
                 backgroundColorControls.classList.add('hidden');
             }
             updateBackgroundEffectToggles(); 
-            drawImage();
+            drawImage(); // Redraw to update the checkerboard
         });
         bgColorInput.addEventListener('input', (event) => { editorSettings.bgColor = event.target.value; drawImage(); });
         colorToleranceInput.addEventListener('input', (event) => { editorSettings.colorTolerance = parseInt(event.target.value); colorToleranceValueDisplay.textContent = editorSettings.colorTolerance; drawImage(); });
@@ -1137,6 +1145,23 @@
                 if (editorSettings.blurBackground) { 
                     blurBackgroundIntensityControl.classList.remove('hidden');
                 }
+            }
+            updateCanvasBackground(); // Call this when effect toggles change
+        }
+
+        // --- New function to update the checkerboard background ---
+        function updateCanvasBackground() {
+            const shouldShowCheckerboard = editorSettings.removeBackgroundColor && 
+                                           editorSettings.enableSegmentationEffects && 
+                                           !editorSettings.removeBackground &&
+                                           editorSettings.grayscaleMode === 'none' &&
+                                           !editorSettings.dimBackground &&
+                                           !editorSettings.blurBackground;
+            
+            if (shouldShowCheckerboard) {
+                imageCanvas.classList.add('checkerboard-bg');
+            } else {
+                imageCanvas.classList.remove('checkerboard-bg');
             }
         }
 
@@ -1359,6 +1384,7 @@
             imageCanvas.width = 0;
             imageCanvas.height = 0;
             currentSegmentationMask = null; 
+            updateCanvasBackground(); // Update background when canvas is cleared
         }
 
         // Initial setup on page load
