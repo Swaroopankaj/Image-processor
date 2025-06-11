@@ -421,10 +421,12 @@
         }
 
             body.light button:hover {
+                transform: translateY(-1px);
                 box-shadow: 0 6px 10px -1px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08);
             }
 
             body.light button:active {
+                transform: translateY(0);
                 box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.05);
             }
 
@@ -983,20 +985,37 @@
 
 
         <!-- Info Modal -->
-        <div id="infoModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div id="infoModal" class="hidden fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
             <div class="bg-gray-800 rounded-lg p-6 shadow-xl w-11/12 md:w-1/2 lg:w-1/3 border border-gray-600 relative">
-                <h3 class="text-xl font-bold text-gray-100 mb-4">About Nebula: An Image Editor</h3>
+                <h3 class="text-xl font-bold text-gray-100 mb-4">Unleash Your Image's Potential with Nebula!</h3>
                 <p class="text-gray-300 text-sm mb-4">
-                    This is an advanced web-based image processing tool. It allows you to apply various adjustments, filters, and AI-powered segmentation effects to your images.
-                    Features include brightness, contrast, saturation, hue, blur, grayscale, invert, sepia, glow, opacity adjustments.
-                    It also supports intelligent background removal (human subjects), color-based background removal, subject tinting, outlining, and background dimming/blurring using MediaPipe.
-                    You can also perform transformations like flipping, rotating, and cropping, and resize images.
+                    Welcome to Nebula, your all-in-one web-based image editing powerhouse! Dive into a universe of creative possibilities and transform your photos with ease. From fundamental adjustments to advanced AI-powered effects, Nebula puts professional-grade tools right at your fingertips.
                 </p>
-                <button id="closeInfoModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-100 transition-colors duration-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+                <h3 class="font-semibold mb-2">Features:</h3>
+                <ul class="list-disc list-inside mb-4 text-sm">
+                    <li>Global Adjustments: Master brightness, contrast, saturation, hue, and apply a subtle global blur to set the perfect mood.</li>
+                    <li>Creative Filters: Experiment with classic grayscale, invert colors for a dramatic flair, add a nostalgic sepia tone, or give your subjects a radiant glow. Control the overall opacity for stunning blends.</li>
+                    <li>Color Overlays: Infuse your images with specific color moods and intensities to achieve unique artistic expressions.</li>
+                    <li>AI-Powered Segmentation: Harness MediaPipe's intelligent segmentation to effortlessly remove backgrounds (especially for human subjects!), isolate subjects, grayscale either foreground or background, or add vibrant tints and outlines to make your subject pop.</li>
+                    <li>Background Magic: Dim or blur your backgrounds to draw focus to your main subject, creating depth and professional-looking portraits.</li>
+                    <li>Transformations: Precisely flip, rotate, crop to a perfect square, or resize your images with intuitive controls.</li>
+                    <li>Flexible Downloads: Save your masterpiece in various formats including PNG, JPEG, WebP, BMP, and TIFF.</li>
+                </ul>
+                <h3 class="font-semibold mb-2">How to Use:</h3>
+                <ol class="list-decimal list-inside mb-4 text-sm">
+                    <li><strong>Upload Image:</strong> Click the "Upload Image" button and select an image from your device.</li>
+                    <li><strong>Adjust Settings:</strong> Use the sliders and checkboxes in the right panel to apply various effects and transformations.</li>
+                    <li><strong>Segmentation:</strong> For human subject background removal or effects, ensure "Remove Background (Human Subject)" is checked.</li>
+                    <li><strong>Download:</strong> Select your desired format and click "Download" to save your masterpiece!</li>
+                </ol>
+                <p class="text-gray-300 text-sm">
+                    Ready to create something amazing? Upload an image and let Nebula inspire your next visual masterpiece!
+                </p>
+                <div class="flex justify-end">
+                    <button id="closeInfoModal" class="bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-all duration-300 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2">
+                        Got It!
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1780,7 +1799,7 @@
         updateBackgroundEffectToggles();
         drawImage();
         });
-        dimIntensityInput.addEventListener('input', (event) => { editorSettings.dimIntensity = parseFloat(event.target.value); dimValueDisplay.textContent = dimIntensity.toFixed(1); drawImage(); });
+        dimIntensityInput.addEventListener('input', (event) => { editorSettings.dimIntensity = parseFloat(event.target.value); dimValueDisplay.textContent = editorSettings.dimIntensity.toFixed(1); drawImage(); });
 
         blurBackgroundCheckbox.addEventListener('change', (event) => {
         editorSettings.blurBackground = event.target.checked;
@@ -2156,7 +2175,16 @@
         }
 
         // Initial setup on page load
-        window.onload = loadSegmentationModel;
+        window.onload = () => {
+        // Add a small delay to ensure the external MediaPipe script has fully loaded and defined its globals
+        setTimeout(() => {
+        loadSegmentationModel();
+        }, 500); // 500ms delay, can be adjusted
+        // Hide loading indicator if no image is loaded initially
+        if (!originalImage.src) {
+        loadingDiv.classList.add('hidden');
+        }
+        };
     </script>
 </body>
 </html>
