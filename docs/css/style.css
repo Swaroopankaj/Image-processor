@@ -1,3 +1,17 @@
+/* css/style.css */
+
+/* Define a custom Tailwind class for Great Vibes */
+.font-great-vibes {
+    font-family: 'Great Vibes', cursive;
+}
+
+/* Define a custom Tailwind class for Parisienne */
+.font-parisienne {
+    font-family: 'Parisienne', cursive;
+}
+
+/* ... rest of your CSS ... */
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
